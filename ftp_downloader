@@ -1,0 +1,25 @@
+from ftplib import FTP, error_perm
+import os
+
+
+def ftp_downloader(station_id, start_year, end_year, url="ftp.pyclass.com",
+                   user="student@pyclass.com", passwd="student123"):
+    ftp = FTP(url)
+    ftp.login(user, passwd)
+    os.chdir("C:\\Users\\damonh\\PycharmProjects\\ftp_downloader")
+    for year in range(start_year, end_year + 1):
+        fullpath = '/Data/%s/%s-%s.gz' % (year, station_id, year)
+        filename = os.path.basename(fullpath)
+        try:
+            with open(filename, 'wb') as file:
+                ftp.retrbinary('RETR %s' % filename, file.write)
+                print('%s successfully downloaded' % filename)
+        except error_perm:
+            print('%s is not available' % filename)
+            os.remove(filename)
+    ftp.close()
+
+ids = ["010010-99999", "010014-99999", "010015-99999", "010020-99999"]
+
+for name in ids:
+    ftp_downloader(name, 2010, 2014)
